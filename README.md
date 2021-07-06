@@ -1,4 +1,6 @@
-# Carbonfact - Models
+# Carbonfact Models
+
+![](./banner_share.jpg)
 
 This repository contains the carbon footprint models used by [Carbonfact](https://www.carbonfact.co).
 
