@@ -1,0 +1,22 @@
+{
+  "name": "carbonfact-models",
+  "version": "0.2.0",
+  "description": "Source code used in Carbonfact to calculate the carbon footprints.",
+  "main": "index.js",
+  "repository": "git@github.com:kansoapp/carbonfact-models.git",
+  "author": "Carbonfact - Kanso Inc.",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "@types/node": "^16.4.10",
+    "jest": "^27.0.6",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "test": "yarn jest"
+  },
+  "dependencies": {
+    "@types/jest": "^26.0.24",
+    "ts-jest": "^27.0.4"
+  }
+}
