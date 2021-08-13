@@ -518,7 +518,6 @@ export const modelParameters: ModelParameter[] = [
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/china`],
     version: ModelVersion.version_0_2_0,
-    // TODO: check it's a correct default value for world
   },
   {
     id: "emissionFactor/material/leather/cattle",
@@ -556,7 +555,7 @@ export const modelParameters: ModelParameter[] = [
     source: "Using the value for cattle leather produced in Portugal",
     value: 9.84,
     unit: "kgCO2eq/kg",
-    connectedEntityIds: [`country/portugal`],
+    connectedEntityIds: ["country/portugal"],
     version: ModelVersion.version_0_2_0,
   },
 
@@ -564,7 +563,7 @@ export const modelParameters: ModelParameter[] = [
     id: "emissionFactor/material/leather/cactus",
     label: "Leather, cactus",
     source:
-      "Sami.co proprietary research. Cactus leather stands at 1.02kgCO2eq per pair of shoes while cactus leathers represents approximately 147gr. Cactus leather emission factor is then about 6.94kgCO2/kg. Based on cactus leather produced in Portugal.",
+      "Sami.co proprietary research. Cactus leather stands at 1.02kgCO2eq per pair of shoes while cactus leathers represents approximately 147gr. Cactus leather emission factor is then about 6.94 kgCO2eq/kg. Based on cactus leather produced in Portugal.",
     value: 6.94,
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/${countryDefault}`], // though the source is for a material produced in Portugal, since that's the only value we have, we make it our default value
@@ -574,7 +573,7 @@ export const modelParameters: ModelParameter[] = [
     id: "emissionFactor/material/leather/vegan",
     label: "Leather, vegan",
     source:
-      "Average vegan leather emissions stand at 6.6 kgCO2eq/m² (TODO: public source needed, we used Sami.eco's data). Since PEFCR indicates an average of 4.63 kg/m² for leather, we can take 1.42 kgCO2/kg of material as emission factor for vegan leather before tannery. Adding the tannery the result stands at 2.42 kgCO2/kg.",
+      "Average vegan leather emissions stand at 6.6 kgCO2eq/m² (TODO: public source needed, we used Sami.eco's data). Since PEFCR indicates an average of 4.63 kg/m² for leather, we can take 1.42 kgCO2eq/kg of material as emission factor for vegan leather before tannery. Adding the tannery the result stands at 2.42 kgCO2eq/kg.",
     value: 2.42,
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/${countryDefault}`],
