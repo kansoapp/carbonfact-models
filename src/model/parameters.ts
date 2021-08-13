@@ -531,6 +531,26 @@ export const modelParameters: ModelParameter[] = [
     version: ModelVersion.version_0_2_0,
   },
   {
+    id: "emissionFactor/material/leather/cattle",
+    label: "Leather, cattle",
+    source:
+      "Emission factors for Leather/Beef/Italy from [Kering database, Raw Material Intensities 2020](https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/): 16.883 (Rearing) + 0.513 (Slaughter) + 0.866 (Tanning RH_WB)",
+    value: 18.262,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/italy"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
+    id: "emissionFactor/material/leather/cattle",
+    label: "Leather, cattle",
+    source:
+      "No specific emission factor available for Portugal. Using the value for Italy.",
+    value: 18.262,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
     id: "emissionFactor/material/leather/cattle/recycled",
     label: "Leather, cattle, recycled",
     source: "Using the value for cattle leather produced in Portugal",
@@ -572,6 +592,27 @@ export const modelParameters: ModelParameter[] = [
     deprecated: true,
     replacedBy: "emissionFactor/material/leather/cattle/vegetan",
   },
+  {
+    id: "emissionFactor/material/leather/cattle/vegetan",
+    label: "Leather, cattle, vegetan",
+    source:
+      "Emission factors for Leather/Beef/Italy from [Kering database, Raw Material Intensities 2020](https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/): 16.883 (Rearing) + 0.513 (Slaughter) + 0.637 (Tanning RH_WB Metal-free)",
+    value: 18.033,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/italy"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
+    id: "emissionFactor/material/leather/cattle/vegetan",
+    label: "Leather, cattle, vegetan",
+    source:
+      "No specific emission factor available for Portugal. Using the value for Italy.",
+    value: 18.033,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
     id: "emissionFactor/material/leather/wine",
     label: "Leather, wine",
     source: "Using the emission factor for vegan leather.",
