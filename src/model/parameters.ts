@@ -9,10 +9,6 @@ export const modelEntities: ModelEntity[] = [
     label: "China",
   },
   {
-    id: "country/vietnam",
-    label: "Vietnam",
-  },
-  {
     id: "country/italy",
     label: "Italy",
   },
@@ -23,10 +19,6 @@ export const modelEntities: ModelEntity[] = [
   {
     id: "country/portugal",
     label: "Portugal",
-  },
-  {
-    id: "country/australia",
-    label: "Australia",
   },
   {
     id: `country/${countryDefault}`,
