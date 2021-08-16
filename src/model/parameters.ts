@@ -9,10 +9,6 @@ export const modelEntities: ModelEntity[] = [
     label: "China",
   },
   {
-    id: "country/vietnam",
-    label: "Vietnam",
-  },
-  {
     id: "country/italy",
     label: "Italy",
   },
@@ -23,10 +19,6 @@ export const modelEntities: ModelEntity[] = [
   {
     id: "country/portugal",
     label: "Portugal",
-  },
-  {
-    id: "country/australia",
-    label: "Australia",
   },
   {
     id: `country/${countryDefault}`,
@@ -291,6 +283,15 @@ export const modelParameters: ModelParameter[] = [
     version: ModelVersion.version_0_2_0,
   },
   {
+    id: "emissionFactor/material/rubber/recycled",
+    label: "Rubber, recycled",
+    source: "Using the value for synthetic rubber for Italy and Spain",
+    value: 1.529,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
     id: "emissionFactor/material/rubber/recycled40synthetic60",
     label: "Rubber, 40% recycled / 60% synthetic",
     source: "N/D",
@@ -402,12 +403,49 @@ export const modelParameters: ModelParameter[] = [
     version: ModelVersion.version_0_2_0,
   },
   {
+    id: "emissionFactor/material/polyethylene/recycled",
+    label: "PE, recycled (Polyethylene)",
+    source:
+      "Kering database, Raw Material Intensities 2020: https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/",
+    value: 0.397,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: [`country/italy`],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/polyethylene/recycled",
+    label: "PE, recycled (Polyethylene)",
+    source: "Using value for Italy",
+    value: 0.397,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: [`country/portugal`],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
     id: "emissionFactor/material/polyethyleneTerephtalate/recycled",
     label: "PET, recycled (Polyethylene Terephtalate)",
     source: "Unknown",
     value: 1.48,
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/china`],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/polyethyleneTerephtalate/recycled",
+    label: "PET, recycled (Polyethylene Terephtalate)",
+    source: "Using the same value as PE, recycled, from Italy",
+    value: 0.397,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: [`country/italy`],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/polyethyleneTerephtalate/recycled",
+    label: "PET, recycled (Polyethylene Terephtalate)",
+    source: "Using the same value as PE, recycled, from Italy",
+    value: 0.397,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: [`country/portugal`],
     version: ModelVersion.version_0_2_0,
   },
   {
@@ -419,6 +457,36 @@ export const modelParameters: ModelParameter[] = [
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/${countryDefault}`],
     version: ModelVersion.version_0_1_0,
+  },
+  {
+    id: "emissionFactor/material/eva/standard",
+    label: "EVA (Ethylene Vinyl Acetate)",
+    source:
+      "Kering database, Raw Material Intensities 2020: https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/",
+    value: 7.789,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/china"],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/eva/standard",
+    label: "EVA (Ethylene Vinyl Acetate)",
+    source:
+      "Kering database, Raw Material Intensities 2020: https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/",
+    value: 2.238,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/eva/standard",
+    label: "EVA (Ethylene Vinyl Acetate)",
+    source:
+      "Kering database, Raw Material Intensities 2020: https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/",
+    value: 2.238,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/italy"],
+    version: ModelVersion.version_0_2_0,
   },
   {
     id: "emissionFactor/material/eva/mixRecycled50",
@@ -450,7 +518,6 @@ export const modelParameters: ModelParameter[] = [
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/china`],
     version: ModelVersion.version_0_2_0,
-    // TODO: check it's a correct default value for world
   },
   {
     id: "emissionFactor/material/leather/cattle",
@@ -463,12 +530,32 @@ export const modelParameters: ModelParameter[] = [
     version: ModelVersion.version_0_2_0,
   },
   {
+    id: "emissionFactor/material/leather/cattle",
+    label: "Leather, cattle",
+    source:
+      "Emission factors for Leather/Beef/Italy from [Kering database, Raw Material Intensities 2020](https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/): 16.883 (Rearing) + 0.513 (Slaughter) + 0.866 (Tanning RH_WB)",
+    value: 18.262,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/italy"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
+    id: "emissionFactor/material/leather/cattle",
+    label: "Leather, cattle",
+    source:
+      "No specific emission factor available for Portugal. Using the value for Italy.",
+    value: 18.262,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
     id: "emissionFactor/material/leather/cattle/recycled",
     label: "Leather, cattle, recycled",
     source: "Using the value for cattle leather produced in Portugal",
     value: 9.84,
     unit: "kgCO2eq/kg",
-    connectedEntityIds: [`country/portugal`],
+    connectedEntityIds: ["country/portugal"],
     version: ModelVersion.version_0_2_0,
   },
 
@@ -476,7 +563,7 @@ export const modelParameters: ModelParameter[] = [
     id: "emissionFactor/material/leather/cactus",
     label: "Leather, cactus",
     source:
-      "Sami.co proprietary research. Cactus leather stands at 1.02kgCO2eq per pair of shoes while cactus leathers represents approximately 147gr. Cactus leather emission factor is then about 6.94kgCO2/kg. Based on cactus leather produced in Portugal.",
+      "Sami.co proprietary research. Cactus leather stands at 1.02kgCO2eq per pair of shoes while cactus leathers represents approximately 147gr. Cactus leather emission factor is then about 6.94 kgCO2eq/kg. Based on cactus leather produced in Portugal.",
     value: 6.94,
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/${countryDefault}`], // though the source is for a material produced in Portugal, since that's the only value we have, we make it our default value
@@ -486,11 +573,43 @@ export const modelParameters: ModelParameter[] = [
     id: "emissionFactor/material/leather/vegan",
     label: "Leather, vegan",
     source:
-      "Average vegan leather emissions stand at 6.6 kgCO2eq/m² (TODO: public source needed, we used Sami.eco's data). Since PEFCR indicates an average of 4.63 kg/m² for leather, we can take 1.42 kgCO2/kg of material as emission factor for vegan leather before tannery. Adding the tannery the result stands at 2.42 kgCO2/kg.",
+      "Average vegan leather emissions stand at 6.6 kgCO2eq/m² (TODO: public source needed, we used Sami.eco's data). Since PEFCR indicates an average of 4.63 kg/m² for leather, we can take 1.42 kgCO2eq/kg of material as emission factor for vegan leather before tannery. Adding the tannery the result stands at 2.42 kgCO2eq/kg.",
     value: 2.42,
     unit: "kgCO2eq/kg",
     connectedEntityIds: [`country/${countryDefault}`],
     version: ModelVersion.version_0_2_0,
+  },
+  {
+    id: "emissionFactor/material/leather/vegetan",
+    label: "Leather, vegetan",
+    source:
+      'Using Portugal\'s "leather/cattle" emission factor. Removed 1.049 kgCO2eq/kg for the tanning process in Portugal (value from Kering database, Raw Material Intensities 2020 (https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/).',
+    value: 8.791,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_0,
+    deprecated: true,
+    replacedBy: "emissionFactor/material/leather/cattle/vegetan",
+  },
+  {
+    id: "emissionFactor/material/leather/cattle/vegetan",
+    label: "Leather, cattle, vegetan",
+    source:
+      "Emission factors for Leather/Beef/Italy from [Kering database, Raw Material Intensities 2020](https://kering-group.opendatasoft.com/explore/dataset/raw-material-intensities-2020/table/): 16.883 (Rearing) + 0.513 (Slaughter) + 0.637 (Tanning RH_WB Metal-free)",
+    value: 18.033,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/italy"],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
+    id: "emissionFactor/material/leather/cattle/vegetan",
+    label: "Leather, cattle, vegetan",
+    source:
+      "No specific emission factor available for Portugal. Using the value for Italy.",
+    value: 18.033,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: ["country/portugal"],
+    version: ModelVersion.version_0_2_1,
   },
   {
     id: "emissionFactor/material/leather/wine",

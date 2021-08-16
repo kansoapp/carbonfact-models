@@ -1,6 +1,7 @@
 import { ModelEntity, ModelParameter } from "./types";
 import { modelEntities, modelParameters, countryDefault } from "./parameters";
 import { ModelVersion } from "../lib/types";
+import { compare } from "../lib/sorting";
 
 // TECHNICAL-DEBT this should be tested extensively and parameters should be
 //   injected to maximize testing possibilities.
@@ -49,8 +50,6 @@ interface DropdownItem {
   label: string;
 }
 
-const compareStrings = (a: string, b: string) => (a == b ? 0 : a < b ? -1 : 1);
-
 /**
  * Takes all emission factors and return an array of the unique
  * `{id: ef.id, label: ef.label}` values.
@@ -73,7 +72,7 @@ export const emissionFactorsDropdownItems: DropdownItem[] = (() => {
   }
 
   // Sorting
-  items.sort((ef1, ef2) => compareStrings(ef1.label, ef2.label));
+  items.sort((ef1, ef2) => compare<string>(ef1.label, ef2.label, "asc"));
 
   return items;
 })();
@@ -86,7 +85,7 @@ const countries = filteredModelEntities("country/");
 
 export const countriesDropdownItems: DropdownItem[] = countries
   .map((c) => ({ id: c.id, label: c.label }))
-  .sort((c1, c2) => compareStrings(c1.label, c2.label));
+  .sort((c1, c2) => compare<string>(c1.label, c2.label, "asc"));
 
 export function findModelParameter(id: string): ModelParameter | undefined {
   return modelParameters.find((p) => p.id == id);

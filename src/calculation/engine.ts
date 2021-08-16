@@ -8,7 +8,7 @@ import {
 import { ModelVersion } from "../lib/types";
 import { countryDefault } from "../model/parameters";
 
-export const currentVersion = ModelVersion.version_0_2_0;
+export const currentVersion = ModelVersion.version_0_2_1;
 export const undefinedMaterialId = "undefined";
 export const undefinedCountryId = "undefined";
 

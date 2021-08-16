@@ -10,6 +10,7 @@ export interface ModelParameter {
   comments?: string;
   version: ModelVersion;
   deprecated?: boolean;
+  replacedBy?: string; // Id of the new `ModelParameter if deprecated. Used by scripts to automatically update `ProductData` references.
 }
 
 export interface ModelEntity {
