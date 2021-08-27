@@ -449,6 +449,15 @@ export const modelParameters: ModelParameter[] = [
     version: ModelVersion.version_0_2_0,
   },
   {
+    id: "emissionFactor/material/polyethyleneTerephtalate/recycled",
+    label: "PET, recycled (Polyethylene Terephtalate)",
+    source: "Using the same value as PE, recycled, from Italy",
+    value: 0.397,
+    unit: "kgCO2eq/kg",
+    connectedEntityIds: [`country/spain`],
+    version: ModelVersion.version_0_2_1,
+  },
+  {
     id: "emissionFactor/material/eva/standard",
     label: "EVA (Ethylene Vinyl Acetate)",
     source:
