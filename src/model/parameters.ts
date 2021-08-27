@@ -796,4 +796,15 @@ export const modelParameters: ModelParameter[] = [
     connectedEntityIds: [`country/${countryDefault}`],
     version: ModelVersion.version_0_1_0,
   },
+  {
+    id: "fixedValue/categoryAverageEmissions/shoes/sneakers",
+    label: "Average CO2e emissions for the Shoes/Sneakers category",
+    source:
+      "Using carbon footprint of a typical pair of running shoes made of synthetic materials ([source MIT](https://dspace.mit.edu/bitstream/handle/1721.1/102070/Olivetti_Manufacturing-focused.pdf)). Using this value as a proxy for the sneakers category until we can find or create data on this specific category.",
+    value: 14,
+    variationCoefficient: 0.2,
+    unit: "kgCO2eq",
+    connectedEntityIds: [`country/${countryDefault}`],
+    version: ModelVersion.version_0_2_1,
+  },
 ];

@@ -5,6 +5,7 @@ export interface ModelParameter {
   label: string; // a human-readable string to display the model parameter in the UI
   source: string; // human-readable explanation and sources
   value: number;
+  variationCoefficient?: number;
   unit: "kgCO2eq" | "kgCO2eq/kg" | "kWh" | "kgCO2eq/kWh";
   connectedEntityIds: string[];
   comments?: string;
