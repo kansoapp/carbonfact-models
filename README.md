@@ -36,12 +36,12 @@ yarn test
 
 ## How it works
 
-**[Engine](./src/calculation/engine.ts)**
+**[Compute](./src/operations/ComputeProductFootprint.ts)**
 
 - The carbon footprint is calculated in here, by the `computeFootprint(productData: ProductData)` method.
-- The `ProductData` type represents the data necessary to perform the computation. It is defined in [src/model/types.ts](./src/model/types.ts).
+- Different types (e.g. `ProductDataEntity`, `EmissionFactorEntity`...) represent the data necessary to perform the computation. They are defined in [src/entities](./src/entities).
 
-**[Templating](./src/calculation/templating.ts)**
+**[Expand](./src/operations/ExpandPartialProductData.ts)**
 
 _Introduced in `v0.2.0`_
 
@@ -53,19 +53,19 @@ _Introduced in `v0.2.0`_
 
 ## Included data
 
-The emission factors and model parameters used in our calculation engine are defined in [parameters.ts](./src/model/parameters.ts).
+The emission factors and model parameters used in our calculation engine are defined in [parameters.ts](./src/data/parameters.ts).
 
 They are mostly:
 
 **Emission factors**
 
 - The most important parameters of the calculation! They determine how much carbon-equivalent emissions a given material or component represents. For example, how much CO2eq a kg of recycled cotton made in Spain emits.
-- Emission factors are defined in [parameters.ts](./src/model/parameters.ts), prefixed by `emissionFactor`.
+- Emission factors are defined in [parameters.ts](./src/data/parameters.ts), prefixed by `emissionFactor`.
 
 **Model parameters**
 
 - For some parts of the carbon footprint assessment, it is less important to have a very detailed analysis (e.g. the most important part - in terms of CO2eq emissions - of the life-cycle of a pair of shoes is the materials it's made of). For those, we may rely on model parameters which provides high-level approximates of the emissions (e.g. the distribution step).
-- Those parameters are defined in [parameters.ts](./src/model/parameters.ts), prefixed by `fixedValue`.
+- Those parameters are defined in [parameters.ts](./src/data/parameters.ts), prefixed by `fixedValue`.
 
 Data-owner? Reach out if you have any remark or question on how we use your data.
 
