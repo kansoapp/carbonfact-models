@@ -1,32 +1,13 @@
 import { ModelEntity, ModelParameter } from "./types";
-import { modelEntities, modelParameters, countryDefault } from "./parameters";
-import { ModelVersion } from "../lib/types";
-import { compare } from "../lib/sorting";
+import { modelParameters, countryDefault } from "../data/parameters";
+import { ModelVersion } from "../types";
+import { compare } from "../../../_lib/sorting";
+import { LegacyGeographicalAreaProvider } from "../providers/geographical-area/legacy";
 
 // TECHNICAL-DEBT this should be tested extensively and parameters should be
 //   injected to maximize testing possibilities.
 
 // TECHNICAL-DEBT no filtering on countries for emissionFactors yet.
-
-/**
- * Returns the `ModelEntity` items matching the specified prefix.
- * NB: the prefix is stripped from the returned entities' id.
- *
- * @param prefix
- * @returns
- */
-function filteredModelEntities(prefix: string): ModelEntity[] {
-  return modelEntities
-    .map((p) =>
-      p.id.startsWith(prefix)
-        ? {
-            ...p,
-            id: p.id.replace(prefix, ""),
-          }
-        : undefined
-    )
-    .filter((p) => p != undefined) as ModelEntity[];
-}
 
 function filteredModelParameters(prefix: string): ModelParameter[] {
   return modelParameters
@@ -54,7 +35,7 @@ interface DropdownItem {
  * Takes all emission factors and return an array of the unique
  * `{id: ef.id, label: ef.label}` values.
  *
- * Several emission factors may have the same idea and differ on the country.
+ * Several emission factors may have the same id and differ on the country.
  *   Only one item should be returned.
  */
 export const emissionFactorsDropdownItems: DropdownItem[] = (() => {
@@ -81,7 +62,8 @@ const emissionFactorsForElectricity = filteredModelParameters(
   "emissionFactor/energy/electricity"
 );
 
-const countries = filteredModelEntities("country/");
+const geographicalAreaProvider = LegacyGeographicalAreaProvider();
+const countries = geographicalAreaProvider.allCountries();
 
 export const countriesDropdownItems: DropdownItem[] = countries
   .map((c) => ({ id: c.id, label: c.label }))

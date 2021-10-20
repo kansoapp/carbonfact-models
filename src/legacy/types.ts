@@ -1,8 +1,10 @@
-import { ModelVersion } from "../lib/types";
+import { ProductComponentId as ComponentId } from "../entities/ProductDataEntity";
+import { ModelVersion } from "../types";
 
 export interface ModelParameter {
   id: string; // a path to identify the entity represented by this parameter
   label: string; // a human-readable string to display the model parameter in the UI
+  description?: string;
   source: string; // human-readable explanation and sources
   value: number;
   variationCoefficient?: number;
@@ -20,13 +22,7 @@ export interface ModelEntity {
   default?: boolean;
 }
 
-export type ProductComponentId =
-  | "insole"
-  | "outsole"
-  | "lining"
-  | "laces"
-  | "upper"
-  | "sides";
+export type ProductComponentId = ComponentId;
 
 export interface ProductDataComponent {
   componentId: ProductComponentId;

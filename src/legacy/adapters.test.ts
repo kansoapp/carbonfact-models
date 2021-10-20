@@ -1,4 +1,4 @@
-import { ModelVersion } from "../lib/types";
+import { ModelVersion } from "../types";
 import {
   filterModelParametersOnCountries,
   findEmissionFactorForElectricityWithCountry,
@@ -6,7 +6,7 @@ import {
   findFixedValueForIdAndCountries,
   selectModelParameterOnVersion,
 } from "./adapters";
-import { countryDefault } from "./parameters";
+import { countryDefault } from "../data/parameters";
 import { ModelParameter } from "./types";
 
 test("findEmissionFactorForElectricityWithCountry() returns the matching `ModelParameter` with the prefix removed", () => {
