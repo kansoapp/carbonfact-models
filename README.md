@@ -2,19 +2,19 @@
 
 ![](./banner_share.jpg)
 
-This repository contains the carbon footprint models used by [Carbonfact](https://www.carbonfact.co).
+This repository contains the carbon footprint models used by [Carbonfact](https://www.carbonfact.com).
 
 ## Disclaimer
 
 This repository is in its early days. Please be indulgent, we're progressively improving it to make it easier to understand, re-use and contribute to.
 
-If you have questions, please have a look at [the main website](https://www.carbonfact.co) and contact us at [hello@carbonfact.co](mailto:hello@carbonfact.co).
+If you have questions, please have a look at [the main website](https://www.carbonfact.com) and contact us at [hello@carbonfact.com](mailto:hello@carbonfact.com).
 
 ## How to use
 
 This repository is intended for:
 
-- Explaining how the carbon footprint calculation is done on [Carbonfact](https://www.carbonfact.co).
+- Explaining how the carbon footprint calculation is done on [Carbonfact](https://www.carbonfact.com).
 - Enabling anyone to audit or reuse our methodology.
 
 For now, we are sharing the source code used on our platform to calculate the carbon footprints. We share it as open-source using a [simple copyleft license](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) so that it may be reused but any improvement to the model must be shared with the community (by us and others).
@@ -78,7 +78,7 @@ If you see errors or want to suggest improvements, feel free to submit Github is
 - You own data that may help us in our assessment (e.g. emission factors) and would like to share them with us?
 - We use some of your data and you have any remark?
 
-👉 contact us on [hello@carbonfact.co](mailto:hello@carbonfact.co)
+👉 contact us on [hello@carbonfact.com](mailto:hello@carbonfact.com)
 
 ## TODOs
 
