@@ -1,4 +1,4 @@
-import { ProductComponentId as ComponentId } from "../entities/ProductDataEntity";
+import { ProductComponentId } from "../entities/ProductDataEntity";
 import { ModelVersion } from "../types";
 
 export interface ModelParameter {
@@ -9,20 +9,10 @@ export interface ModelParameter {
   value: number;
   variationCoefficient?: number;
   unit: "kgCO2eq" | "kgCO2eq/kg" | "kWh" | "kgCO2eq/kWh";
-  connectedEntityIds: string[];
+  countryIds?: string[];
   comments?: string;
   version: ModelVersion;
-  deprecated?: boolean;
-  replacedBy?: string; // Id of the new `ModelParameter if deprecated. Used by scripts to automatically update `ProductData` references.
 }
-
-export interface ModelEntity {
-  id: string;
-  label: string;
-  default?: boolean;
-}
-
-export type ProductComponentId = ComponentId;
 
 export interface ProductDataComponent {
   componentId: ProductComponentId;
@@ -67,12 +57,4 @@ export interface ProductDataPartial {
   manufacturingCountrySourceUrls?: string[];
   endOfLifeRecyclingProgram?: boolean;
   endOfLifeRecyclingProgramSourceUrls?: string[];
-}
-
-export interface ProductFootprint {
-  materials: number;
-  manufacturing: number;
-  distribution: number;
-  use: number;
-  endOfLife: number;
 }

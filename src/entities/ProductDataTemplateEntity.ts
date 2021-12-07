@@ -3,10 +3,12 @@ import { ProductDataEntity } from "./ProductDataEntity";
 
 export interface ProductDataTemplateEntity
   extends Omit<ProductDataEntity, "distributionMode"> {
-  id: string; // referenced by ProductDataPartial.templateId
+  // See doc/expansion.md to know why "distributionMode" is omitted.
+
+  id: string; // referenced by ProductDataSubmission.templateId
   label: string; // to be displayed in UI
   source: string; // explains how the template was constructed and/or gives the sources
-  productCategoryId: string; // identifies the product category this template applies to
+  productCategorySlug: string; // uniquely identifies the product category this template applies to
 
   /**
    * The version of the model this parameter is associated with.

@@ -9,8 +9,7 @@ export type EmissionFactorEntity = {
   source: string; // human-readable explanation and sources
   value: number;
   unit: EmissionFactorUnit;
-  countryId: string;
+  countryIds: string[];
   version: ModelVersion;
   comments?: string;
-  deprecated?: boolean;
 };

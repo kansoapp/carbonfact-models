@@ -6,7 +6,7 @@ export const ProductComponentId = {
   upper: "upper",
   sides: "sides",
   other: "other",
-};
+} as const;
 
 export type ProductComponentId =
   typeof ProductComponentId[keyof typeof ProductComponentId];
