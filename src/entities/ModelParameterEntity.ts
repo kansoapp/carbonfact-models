@@ -10,8 +10,7 @@ export type ModelParameterEntity = {
   description: string;
   value: number;
   unit: Unit;
-  countryId: string;
+  countryIds?: string[];
   version: ModelVersion;
   comments?: string;
-  deprecated?: boolean;
 };

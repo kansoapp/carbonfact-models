@@ -1,12 +1,13 @@
 import { Unit as ModelParameterUnit } from "../entities/ModelParameterEntity";
-import { EmissionFactorUnit } from "../entities/EmissionFactorEntity";
+import {
+  EmissionFactorEntity,
+  EmissionFactorUnit,
+} from "../entities/EmissionFactorEntity";
 import { ProductDataEntity } from "../entities/ProductDataEntity";
 import { ModelVersion } from "../types";
-import {
-  ComputeProductFootprintOperation,
-  IEmissionFactorProvider,
-  IModelParameterProvider,
-} from "./ComputeProductFootprint";
+import { ComputeProductFootprintOperation } from "./compute-product-footprint";
+import { EmissionFactorProvider } from "../providers/emission-factor-provider";
+import { ModelParameterProvider } from "../providers/model-parameter-provider";
 
 const MANUFACTURING_ELECTRICITY = 10;
 
@@ -39,7 +40,7 @@ const testData1: ProductDataEntity = {
       componentId: "other",
       materials: [
         {
-          materialId: "unidentified/shoesMix",
+          materialId: "missingMaterialPart",
           proportion: 1.0,
         },
       ],
@@ -125,8 +126,8 @@ const testData3: ProductDataEntity = {
   endOfLifeValue: 0.03,
 };
 
-const emissionFactorProvider: IEmissionFactorProvider = {
-  get: (id, countryId, version) => {
+const emissionFactorProvider: EmissionFactorProvider = {
+  get: (id, version, countryId) => {
     function params(id: string): { value: number; unit: EmissionFactorUnit } {
       switch (id) {
         case "material/material1":
@@ -141,7 +142,7 @@ const emissionFactorProvider: IEmissionFactorProvider = {
             case "china":
               return { value: 20.0, unit: "kgCO2eq/kg" };
           }
-        case "material/unidentified/shoesMix":
+        case "material/missingMaterialPart":
           return { value: 30.0, unit: "kgCO2eq/kg" };
         case "energy/electricity":
           switch (countryId) {
@@ -163,14 +164,15 @@ const emissionFactorProvider: IEmissionFactorProvider = {
       source: `Source for ${id}`,
       value: value,
       unit: unit,
-      countryId: countryId,
+      countryIds: [countryId],
       version: version,
     };
   },
+  all: () => [] as EmissionFactorEntity[],
 };
 
-const modelParameterProvider: IModelParameterProvider = {
-  get: (id, countryId, version) => {
+const modelParameterProvider: ModelParameterProvider = {
+  get: (id: string, version: ModelVersion, countryId?: string) => {
     function params(id: string): { value: number; unit: ModelParameterUnit } {
       switch (id) {
         case "lifeCycleAnalysisStep/manufacturing/shoes/energyConsumption/electricity":
@@ -183,7 +185,6 @@ const modelParameterProvider: IModelParameterProvider = {
           }
           return { value: 2, unit: "kgCO2eq" };
         case "lifeCycleAnalysisStep/distribution/shoes":
-          if (countryId === "china") return { value: 2.1, unit: "kgCO2eq" };
           return { value: 2.2, unit: "kgCO2eq" };
         case "lifeCycleAnalysisStep/use/shoes":
           return { value: 1, unit: "kgCO2eq" };
@@ -218,43 +219,43 @@ const computeProductFootprint = ComputeProductFootprintOperation(
 test("ComputeProductFootprint(testData1) is correct", () => {
   const data = testData1;
   const resultFootprint = computeProductFootprint(data, ModelVersion.current);
-  expect(resultFootprint.materials).toBeCloseTo(
+  expect(resultFootprint.breakdown.materials).toBeCloseTo(
     0.6 * (0.3 * 10 + 0.55 * 20 + 0.15 * 30)
   );
-  expect(resultFootprint.manufacturing).toBeCloseTo(
+  expect(resultFootprint.breakdown.manufacturing).toBeCloseTo(
     MANUFACTURING_ELECTRICITY * 0.5
   );
-  expect(resultFootprint.distribution).toBeCloseTo(2);
-  expect(resultFootprint.use).toBeCloseTo(1);
-  expect(resultFootprint.endOfLife).toBeCloseTo(0.01);
+  expect(resultFootprint.breakdown.distribution).toBeCloseTo(2);
+  expect(resultFootprint.breakdown.use).toBeCloseTo(1);
+  expect(resultFootprint.breakdown.endOfLife).toBeCloseTo(0.01);
 });
 
 test("ComputeProductFootprint(testData2) is correct", () => {
   const data = testData2;
   const resultFootprint = computeProductFootprint(data, ModelVersion.current);
-  expect(resultFootprint.materials).toBeCloseTo(
+  expect(resultFootprint.breakdown.materials).toBeCloseTo(
     0.7 * 0.5 * (10 * 0.7 + 20 * 0.3) + 0.7 * 0.5 * 10
   );
-  expect(resultFootprint.manufacturing).toBeCloseTo(
+  expect(resultFootprint.breakdown.manufacturing).toBeCloseTo(
     MANUFACTURING_ELECTRICITY * 0.5
   );
-  expect(resultFootprint.distribution).toBeCloseTo(2);
-  expect(resultFootprint.use).toBeCloseTo(1);
-  expect(resultFootprint.endOfLife).toBeCloseTo(0.02);
+  expect(resultFootprint.breakdown.distribution).toBeCloseTo(2);
+  expect(resultFootprint.breakdown.use).toBeCloseTo(1);
+  expect(resultFootprint.breakdown.endOfLife).toBeCloseTo(0.02);
 });
 
 test("ComputeProductFootprint(testData3) is correct", () => {
   const data = testData3;
   const resultFootprint = computeProductFootprint(data, ModelVersion.current);
-  expect(resultFootprint.materials).toBeCloseTo(
+  expect(resultFootprint.breakdown.materials).toBeCloseTo(
     0.7 * (0.5 * (0.7 * 10 + 0.3 * 20) + 0.5 * (1.0 * 5))
   );
-  expect(resultFootprint.manufacturing).toBeCloseTo(
+  expect(resultFootprint.breakdown.manufacturing).toBeCloseTo(
     MANUFACTURING_ELECTRICITY * 0.1
   );
-  expect(resultFootprint.distribution).toBeCloseTo(2);
-  expect(resultFootprint.use).toBeCloseTo(1);
-  expect(resultFootprint.endOfLife).toBeCloseTo(0.03);
+  expect(resultFootprint.breakdown.distribution).toBeCloseTo(2);
+  expect(resultFootprint.breakdown.use).toBeCloseTo(1);
+  expect(resultFootprint.breakdown.endOfLife).toBeCloseTo(0.03);
 });
 
 test("ComputeProductFootprint(...) raises an error when a material emission factor is missing", () => {
@@ -307,19 +308,4 @@ test("ComputeProductFootprint(invalid) raises an error if the sum of components.
   expect(() => computeProductFootprint(testData, ModelVersion.current)).toThrow(
     "invalid data, sum of proportions of components < 1.0 (0.3)"
   );
-});
-
-test("ComputeProductFootprint(..., 0.3.1) correctly select pre-0.4.0 model parameters for distribution mode", () => {
-  expect(
-    computeProductFootprint(testData1, ModelVersion.version_0_3_1).distribution
-  ).toBeCloseTo(2.1);
-
-  const testDataNonChina: ProductDataEntity = {
-    ...testData1,
-    manufacturingCountryId: "portugal",
-  };
-  expect(
-    computeProductFootprint(testDataNonChina, ModelVersion.version_0_3_1)
-      .distribution
-  ).toBeCloseTo(2.2);
 });

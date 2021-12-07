@@ -1,12 +1,10 @@
 import { PartialProductDataEntity } from "../entities/PartialProductDataEntity";
 import { ProductDataEntity } from "../entities/ProductDataEntity";
 import { ProductDataTemplateEntity } from "../entities/ProductDataTemplateEntity";
-import { IGeographicalAreaProvider } from "../providers/interfaces";
+import { IGeographicalAreaProvider } from "../providers/geographical-area";
+import { IProductDataTemplateProvider } from "../providers/product-data-template-provider";
 import { ModelVersion } from "../types";
-import {
-  ExpandPartialProductDataEntityOperation,
-  IProductDataTemplateProvider,
-} from "./ExpandPartialProductData";
+import { ExpandPartialProductDataEntityOperation } from "./expand-partial-product-data";
 
 const testPartial_Empty: PartialProductDataEntity = {};
 
@@ -58,7 +56,7 @@ const testTemplates: ProductDataTemplateEntity[] = [
     label: "label template1",
     source: "source template1",
     modelVersion: ModelVersion.version_0_2_0,
-    productCategoryId: "shoes/sneakers",
+    productCategorySlug: "shoes/sneakers",
     weight: 1.0,
     components: [
       {
@@ -104,7 +102,7 @@ const testTemplates: ProductDataTemplateEntity[] = [
     label: "label template2",
     source: "source template2",
     modelVersion: ModelVersion.current,
-    productCategoryId: "shoes/sneakers",
+    productCategorySlug: "shoes/sneakers",
     weight: 1.0,
     components: [
       {
@@ -144,6 +142,14 @@ const templateProvider: (
 
 const geographicalAreaProvider: IGeographicalAreaProvider = {
   getById: (id) => {
+    if (id === "somewhere-in-europe") {
+      return {
+        type: "country",
+        id: "somewhere-in-europe",
+        label: "Somewhere in Europe",
+        parentId: "europe",
+      };
+    }
     return {
       id,
       label: "Country from Partial",
@@ -153,22 +159,6 @@ const geographicalAreaProvider: IGeographicalAreaProvider = {
   },
   allCountries: () => {
     return [];
-  },
-  getParent: (ga) => {
-    if (ga.id.includes("europe")) {
-      return {
-        id: "europe",
-        label: "Europe",
-        type: "continent",
-        parentId: "world",
-      };
-    }
-    return {
-      id: "asia",
-      label: "Asia",
-      type: "continent",
-      parentId: "world",
-    };
   },
 };
 
@@ -551,7 +541,7 @@ test("expand(partialWithoutDistributionModeAndManufacturingCountryInAsia, any, a
 test("expand(partialWithoutDistributionModeAndManufacturingCountryInEurope, any, any) sets distributionMode to `intracontinental/default`", () => {
   const partial = {
     ...testPartial_Empty,
-    manufacturingCountryId: "somewhere in europe",
+    manufacturingCountryId: "somewhere-in-europe",
   };
   const result = expandPartialProductData(
     partial,

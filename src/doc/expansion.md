@@ -70,3 +70,5 @@ If the sum of proportions of components is not 1.0, an "Other" component is adde
 - If missing:
   - If the manufacturing country is in Asia: set to `intercontinental/default`.
   - Otherwise: set to `intracontinental/default`.
+
+NB: the `distributionMode` is voluntarily removed from the template so there is no risk of conflict with this business rule.

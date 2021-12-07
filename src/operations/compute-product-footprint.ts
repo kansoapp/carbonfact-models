@@ -1,44 +1,18 @@
-import { countryDefault } from "../data/parameters";
-import { EmissionFactorEntity } from "../entities/EmissionFactorEntity";
+import { EmissionFactorProvider } from "../providers/emission-factor-provider";
 import { ModelParameterEntity } from "../entities/ModelParameterEntity";
 import { ProductDataEntity } from "../entities/ProductDataEntity";
 import {
   ProductFootprintEntity,
   ProductFootprintExplanation,
-  productFootprintTotal,
 } from "../entities/ProductFootprintEntity";
 import { ModelVersion } from "../types";
-import { checkDataValidity } from "./ExpandPartialProductData";
-
-export interface IEmissionFactorProvider {
-  /**
-   * Returns the emission factor corresponding to the `id` and
-   * `country`, whose version is the maximum available one lower
-   * than `version`.
-   *
-   * If there is no match for the specified `country` but the emission
-   * factor exists for "world", this one is returned.
-   *
-   * Throws an error when the emission factor could not be found.
-   */
-  get: (
-    id: string,
-    country: string,
-    version: ModelVersion
-  ) => EmissionFactorEntity;
-}
-
-export interface IModelParameterProvider {
-  get: (
-    id: string,
-    countryId: string,
-    version: ModelVersion
-  ) => ModelParameterEntity;
-}
+import { checkDataValidity } from "./expand-partial-product-data";
+import { ModelParameterProvider } from "../providers/model-parameter-provider";
+import { EmissionFactorEntity } from "../entities/EmissionFactorEntity";
 
 type ComputeProductFootprintOperation = (
-  emissionFactorProvider: IEmissionFactorProvider,
-  modelParameterProvider: IModelParameterProvider
+  emissionFactorProvider: EmissionFactorProvider,
+  modelParameterProvider: ModelParameterProvider
 ) => (
   productDataEntity: ProductDataEntity,
   modelVersion: ModelVersion
@@ -68,27 +42,19 @@ type ComputeProductFootprintOperation = (
  */
 export const ComputeProductFootprintOperation: ComputeProductFootprintOperation =
   (
-    emissionFactorProvider: IEmissionFactorProvider,
-    modelParameterProvider: IModelParameterProvider
+    emissionFactorProvider: EmissionFactorProvider,
+    modelParameterProvider: ModelParameterProvider
   ) => {
     return (data: ProductDataEntity, modelVersion: ModelVersion) => {
       checkDataValidity(data);
-
       const { weight, manufacturingCountryId } = data;
-
-      const footprint: ProductFootprintEntity = {
-        materials: 0,
-        manufacturing: 0,
-        distribution: 0,
-        use: 0,
-        endOfLife: 0,
-      };
 
       // Materials
       // ---------
       const explanationMaterialsComponents: ProductFootprintExplanation["materials"]["components"] =
         [];
       let explanationMaterialsHumanReadable = "";
+      let materialsTotal = 0;
       for (const component of data.components) {
         // Adding the emissions for each component of the product.
 
@@ -100,11 +66,24 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
           // Adding the emissions for each material of the component.
           // TECHNICAL-DEBT check sum of components.materials.proportion <= 1.0
 
-          const emissionFactor = emissionFactorProvider.get(
-            "material/" + materialItem.materialId,
-            component.materialCountryId,
-            modelVersion
-          );
+          let emissionFactor: EmissionFactorEntity;
+          if (materialItem.materialId === "missingMaterialPart") {
+            // TECHNICAL-DEBT relying on "missingMaterialPart" should
+            //   be removed. This is a special case where we have only
+            //   one emission factor, not attached to a specific country.
+            //   This should be done differently in our carbon-model.
+            emissionFactor = emissionFactorProvider.get(
+              "material/missingMaterialPart",
+              modelVersion,
+              "world"
+            );
+          } else {
+            emissionFactor = emissionFactorProvider.get(
+              "material/" + materialItem.materialId,
+              modelVersion,
+              component.materialCountryId
+            );
+          }
 
           const materialItemEmissions =
             emissionFactor.value * componentWeight * materialItem.proportion;
@@ -131,51 +110,58 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
           unit: "kgCO2eq",
         });
 
-        footprint.materials += componentEmissions;
+        materialsTotal += componentEmissions;
       }
-      explanationMaterialsHumanReadable = `total = ${footprint.materials} kgCO2e`;
+      explanationMaterialsHumanReadable = `total = ${materialsTotal} kgCO2e`;
 
       // Manufacturing
+      let manufacturingTotal = 0;
       const manufacturingEnergy = modelParameterProvider.get(
         "lifeCycleAnalysisStep/manufacturing/shoes/energyConsumption/electricity",
-        manufacturingCountryId,
         modelVersion
       );
       const electricityEmissionFactor = emissionFactorProvider.get(
         "energy/electricity",
-        manufacturingCountryId,
-        modelVersion
+        modelVersion,
+        manufacturingCountryId
       );
-      footprint.manufacturing =
+      manufacturingTotal =
         manufacturingEnergy.value * electricityEmissionFactor.value;
       // TECHNICAL-DEBT: not handling/checking units
 
-      const explanationManufacturingHumanReadable = `energy (${manufacturingEnergy.value} kWh) * electricity intensity (${electricityEmissionFactor.value} kgCO2e/kWh) = ${footprint.manufacturing} kgCO2e`;
+      const explanationManufacturingHumanReadable = `energy (${
+        manufacturingEnergy.value
+      } kWh) * electricity intensity for ${electricityEmissionFactor.countryIds.join(
+        ", "
+      )} (${
+        electricityEmissionFactor.value
+      } kgCO2e/kWh) = ${manufacturingTotal} kgCO2e`;
 
       // Distribution
+      let distributionTotal = 0;
       const distributionModelParameter = selectDistributionModelParameter(
         modelParameterProvider,
         data.distributionMode,
-        manufacturingCountryId,
         modelVersion
       );
-      footprint.distribution = distributionModelParameter.value;
+      distributionTotal = distributionModelParameter.value;
       // TECHNICAL-DEBT: no handling/checking units
 
       const explanationDistributionHumanReadable = `${distributionModelParameter.description}: ${distributionModelParameter.value} ${distributionModelParameter.unit}`;
 
       // Use
-      footprint.use = modelParameterProvider.get(
+      let useTotal = 0;
+      useTotal = modelParameterProvider.get(
         "lifeCycleAnalysisStep/use/shoes",
-        countryDefault,
         modelVersion
       ).value;
       // TECHNICAL-DEBT: not handling case where it's missing
       // TECHNICAL-DEBT: not handling/checking unit
 
-      const explanationUseHumanReadable = `fixed value for ${countryDefault} = ${footprint.use}`;
+      const explanationUseHumanReadable = `"use" step: fixed value = ${useTotal} kgCO2e`;
 
       // End of life
+      let endOfLifeTotal = 0;
       const endOfLifeOption = data.endOfLifeOption;
       let endOfLifeModelParameter: ModelParameterEntity | undefined = undefined;
       let explanationEndOfLifeHumanReadable: string = "";
@@ -184,10 +170,9 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
         const endOfLifeParameterId = `lifeCycleAnalysisStep/endOfLife/shoes/${endOfLifeOption}`;
         endOfLifeModelParameter = modelParameterProvider.get(
           endOfLifeParameterId,
-          manufacturingCountryId,
           modelVersion
         );
-        footprint.endOfLife = endOfLifeModelParameter.value;
+        endOfLifeTotal = endOfLifeModelParameter.value;
         explanationEndOfLifeHumanReadable = `${endOfLifeModelParameter.description}: ${endOfLifeModelParameter.value} ${endOfLifeModelParameter.unit}`;
       } else {
         if (!data.endOfLifeValue) {
@@ -195,15 +180,18 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
             `unexpected: null "endOfLifeValue" with option="custom"`
           );
         }
-        footprint.endOfLife = data.endOfLifeValue;
+        endOfLifeTotal = data.endOfLifeValue;
         explanationEndOfLifeHumanReadable = `Value estimated by the brand according to its own recycling programs for this product: ${data.endOfLifeValue} kgCO2eq`;
       }
 
-      const explanationTotalHumanReadable = `${productFootprintTotal(
-        footprint
-      )} kgCO2e`;
-
-      footprint.explanation = {
+      const footprintTotal =
+        materialsTotal +
+        manufacturingTotal +
+        distributionTotal +
+        useTotal +
+        endOfLifeTotal;
+      const explanationTotalHumanReadable = `${footprintTotal} kgCO2e`;
+      const explanation: ProductFootprintExplanation = {
         materials: {
           components: explanationMaterialsComponents,
           humanReadable: explanationMaterialsHumanReadable,
@@ -226,7 +214,17 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
           humanReadable: explanationTotalHumanReadable,
         },
       };
-      return footprint;
+      return {
+        total: footprintTotal,
+        breakdown: {
+          materials: materialsTotal,
+          manufacturing: manufacturingTotal,
+          distribution: distributionTotal,
+          use: useTotal,
+          endOfLife: endOfLifeTotal,
+        },
+        explanation,
+      };
     };
   };
 
@@ -235,22 +233,12 @@ export const ComputeProductFootprintOperation: ComputeProductFootprintOperation 
  * changed the way the distribution emissions fixed value was selected.
  */
 function selectDistributionModelParameter(
-  modelParameterProvider: IModelParameterProvider,
+  modelParameterProvider: ModelParameterProvider,
   distributionMode: string,
-  manufacturingCountryId: string,
   modelVersion: ModelVersion
 ) {
-  if (modelVersion < ModelVersion.version_0_4_0) {
-    return modelParameterProvider.get(
-      `lifeCycleAnalysisStep/distribution/shoes`,
-      manufacturingCountryId,
-      modelVersion
-    );
-  } else {
-    return modelParameterProvider.get(
-      `lifeCycleAnalysisStep/distribution/shoes/${distributionMode}`,
-      manufacturingCountryId,
-      modelVersion
-    );
-  }
+  return modelParameterProvider.get(
+    `lifeCycleAnalysisStep/distribution/shoes/${distributionMode}`,
+    modelVersion
+  );
 }

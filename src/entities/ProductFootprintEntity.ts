@@ -3,11 +3,14 @@ import { ModelParameterEntity, Unit } from "./ModelParameterEntity";
 import { ProductComponentId } from "./ProductDataEntity";
 
 export type ProductFootprintEntity = {
-  materials: number;
-  manufacturing: number;
-  distribution: number;
-  use: number;
-  endOfLife: number;
+  total: number;
+  breakdown: {
+    materials: number;
+    manufacturing: number;
+    distribution: number;
+    use: number;
+    endOfLife: number;
+  };
   explanation?: ProductFootprintExplanation;
 };
 
@@ -45,13 +48,3 @@ export type ProductFootprintExplanation = {
     humanReadable: string;
   };
 };
-
-export function productFootprintTotal(entity: ProductFootprintEntity): number {
-  return (
-    entity.materials +
-    entity.manufacturing +
-    entity.distribution +
-    entity.use +
-    entity.endOfLife
-  );
-}

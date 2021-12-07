@@ -6,19 +6,13 @@ import {
   ProductDataEntity,
   ProductDataEntityComponent,
 } from "../entities/ProductDataEntity";
-import { ProductDataTemplateEntity } from "../entities/ProductDataTemplateEntity";
-import { LegacyGeographicalAreaProvider } from "../providers/geographical-area/legacy";
-import { IGeographicalAreaProvider } from "../providers/interfaces";
+import {
+  buildGeographicalAreaProvider,
+  IGeographicalAreaProvider,
+} from "../providers/geographical-area";
+import { IProductDataTemplateProvider } from "../providers/product-data-template-provider";
 import { ModelVersion } from "../types";
 
-export interface IProductDataTemplateProvider {
-  get: (id: string, modelVersion: ModelVersion) => ProductDataTemplateEntity;
-  allIdAndLabel: (
-    modelVersion: ModelVersion
-  ) => { id: string; label: string }[];
-}
-
-const geographicalAreaProvider = LegacyGeographicalAreaProvider();
 const FLOAT_ERROR_MARGIN = 0.001;
 // TECHNICAL-DEBT should look at what's a good value
 
@@ -48,14 +42,14 @@ type ExpandPartialProductDataEntityOperation = (
 export const ExpandPartialProductDataEntityOperation: ExpandPartialProductDataEntityOperation =
   (
     productDataTemplateProvider: IProductDataTemplateProvider,
-    geographicalAreaProvider = LegacyGeographicalAreaProvider()
+    geographicalAreaProvider = buildGeographicalAreaProvider()
   ) => {
     return (src, templateId, modelVersion) => {
       const template = productDataTemplateProvider.get(
         templateId,
         modelVersion
       );
-      const defaultMaterialId = "unidentified/shoesMix"; // TECHNICAL-DEBT: only for "shoes/sneakers"
+      const unidentifiedMaterialId = "missingMaterialPart"; // TECHNICAL-DEBT: only for "shoes/sneakers"
 
       let expanded: PartialProductDataEntity = {
         weight: src.weight,
@@ -150,7 +144,7 @@ export const ExpandPartialProductDataEntityOperation: ExpandPartialProductDataEn
               // TECHNICAL-DEBT: this default material should be selected
               //   according to the component.
               c.materials.push({
-                materialId: defaultMaterialId,
+                materialId: unidentifiedMaterialId,
                 proportion: 1.0 - materialsProportionSum,
               });
             }
@@ -168,7 +162,7 @@ export const ExpandPartialProductDataEntityOperation: ExpandPartialProductDataEn
           componentId: "other",
           materials: [
             {
-              materialId: defaultMaterialId,
+              materialId: unidentifiedMaterialId,
               proportion: 1.0,
             },
           ],
@@ -285,9 +279,8 @@ function distributionModeForCountry(
   countryId: string
 ): string {
   const ga = geographicalAreaProvider.getById(countryId);
-  const parent = geographicalAreaProvider.getParent(ga);
-  if (parent && parent.type === "continent") {
-    switch (parent.id) {
+  if (ga.type === "country") {
+    switch (ga.parentId) {
       case "asia":
         return "intercontinental/default";
       case "south-america":
@@ -298,5 +291,7 @@ function distributionModeForCountry(
         return "intercontinental/default";
     }
   }
-  throw new Error(`unexpected value for country: ${countryId}`);
+  throw new Error(
+    `unexpected "${ga.type}" geographic area, expected "country" (${ga.id})`
+  );
 }
